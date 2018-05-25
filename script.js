@@ -30,7 +30,7 @@ function startGame() {
 // check if a cell has been clicked by a human
 function humanClicked(event)
 {
-  if( origBoard[event.target.id] !== 'O' || origBoard[event.target.id] !== 'X' )
+  if( origBoard[event.target.id] !== 'O' && origBoard[event.target.id] !== 'X' )
     {
       var status = gameAdvance(event.target.id,human);
       if(status==0 && !checkTie())
@@ -159,11 +159,11 @@ function minmax(newBoard,player,depth)
   // if game already over
 	if(checkWin(newBoard,human))
 	{
-		return {score: -10};
+		return {score: -10+depth};
 	}
 	else if(checkWin(newBoard,computer))
 	{
-		return {score: 10};
+		return {score: 10-depth};
 	}
 	else if (freeIndexes.length === 0)
 	{
