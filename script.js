@@ -53,7 +53,6 @@ function gameAdvance(currCell,player)
     gameOver(gameStatus);
     return 1;
   }
-  console.log("hi");
   return 0;
 }
 
@@ -135,7 +134,7 @@ function emptySquares() {
 
 // finding the best spot for the computer to play
 function bestSpot() {
-	return emptySquares()[0];
+	return minmax(origBoard,computer,0).index;
 }
 
 //  function to test if the game has been tied
@@ -150,4 +149,91 @@ function checkTie()
 		return true;
 	}
 	return false;
+}
+
+//  MinMax algorithm function
+function minmax(newBoard,player,depth)
+{
+	var freeIndexes = emptySquares();
+
+  // if game already over
+	if(checkWin(newBoard,human))
+	{
+		return {score: -10};
+	}
+	else if(checkWin(newBoard,computer))
+	{
+		return {score: 10};
+	}
+	else if (freeIndexes.length === 0)
+	{
+			return {score: 0};
+	}
+
+  // To decide the best move
+	var moves = [];
+	if(player==='X')
+	{
+		for(var i = 0; i<freeIndexes.length ; i++)
+		{
+			var move = {};
+			move.index = newBoard[freeIndexes[i]];
+			newBoard[freeIndexes[i]] = player;
+			var result = minmax(newBoard,human,depth+1);
+			move.score = result.score;
+
+			// backtracking
+			newBoard[freeIndexes[i]] = move.index;
+
+			// storing all possible moves
+			moves.push(move);
+		}
+	}
+	else
+	{
+		for(var i = 0; i<freeIndexes.length ; i++)
+		{
+			var move = {};
+			move.index = newBoard[freeIndexes[i]];
+			newBoard[freeIndexes[i]] = player;
+			var result = minmax(newBoard,computer,depth+1);
+			move.score = result.score;
+
+			// backtracking
+			newBoard[freeIndexes[i]] = move.index;
+
+			// storing all possible moves
+			moves.push(move);
+		}
+	}
+
+  // finding the best move
+	var bestMove;
+	if(player === computer)
+	{
+		var bestScore = -10000000;
+		for(var i = 0; i < moves.length; i++)
+		{
+			if (moves[i].score > bestScore)
+			{
+				bestScore = moves[i].score;
+				bestMove = i;
+			}
+		}
+	}
+	else
+	{
+		var bestScore = 10000000;
+		for(var i = 0; i < moves.length; i++)
+		{
+			if (moves[i].score < bestScore)
+			{
+				bestScore = moves[i].score;
+				bestMove = i;
+			}
+		}
+	}
+
+  //  returning the best move
+	return moves[bestMove];
 }
